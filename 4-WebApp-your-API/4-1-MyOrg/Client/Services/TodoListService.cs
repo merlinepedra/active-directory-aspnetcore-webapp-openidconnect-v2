@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -35,14 +36,16 @@ namespace TodoListClient.Services
         private readonly string _TodoListScope = string.Empty;
         private readonly string _TodoListBaseAddress = string.Empty;
         private readonly ITokenAcquisition _tokenAcquisition;
+        ILogger _logger;
 
         public TodoListService(ITokenAcquisition tokenAcquisition, HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor contextAccessor)
         {
             _httpClient = httpClient;
             _tokenAcquisition = tokenAcquisition;
             _contextAccessor = contextAccessor;
-            _TodoListScope = configuration["TodoList:TodoListScope"];
+            _TodoListScope = configuration["TodoList:TodoListScopes"];
             _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
+            //_logger = logger;
         }
 
         public async Task<Todo> AddAsync(Todo todo)
@@ -115,7 +118,7 @@ namespace TodoListClient.Services
         private async Task PrepareAuthenticatedClient()
         {
             var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TodoListScope });
-            Debug.WriteLine($"access token-{accessToken}");
+            //_logger.LogInformation($"access token-{accessToken}");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }

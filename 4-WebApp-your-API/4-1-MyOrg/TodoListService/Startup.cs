@@ -7,6 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using System.Threading.Tasks;
+using System;
 
 namespace TodoListService
 {
@@ -30,6 +33,34 @@ namespace TodoListService
 
             // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
             services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+            //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            //    .AddMicrosoftIdentityWebApi(options =>
+            //        {
+            //            Configuration.Bind("AzureAd", options);
+            //        },
+            //        options =>
+            //        {
+            //            Configuration.Bind("AzureAd", options);
+
+            //            options.Events.OnTokenResponseReceived = async context =>
+            //            {
+            //                await Task.Run(() => { Console.WriteLine($"Service: Token response received: Access Token is {context.ProtocolMessage.AccessToken}"); });
+
+            //            };
+
+            //            options.Events.OnMessageReceived = async context =>
+            //            {
+            //                await Task.Run(() => { Console.WriteLine($"Service: On message received: Access Token is {context.ProtocolMessage.AccessToken}"); });
+            //            };
+
+            //            options.Events.OnTokenValidated = async context =>
+            //            {
+            //                await Task.Run(() => { Console.WriteLine($"Service: On token validated: Access Token is {context.ProtocolMessage.AccessToken}"); });
+            //            };
+            //        },
+            //        subscribeToJwtBearerMiddlewareDiagnosticsEvents: true
+            //    );
+
 
             services.AddControllers();
         }
@@ -51,7 +82,7 @@ namespace TodoListService
             }
 
             app.UseHttpsRedirection();
-            
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

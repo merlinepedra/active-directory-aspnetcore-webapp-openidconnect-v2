@@ -12,6 +12,10 @@ using Microsoft.Identity.Web;
 using TodoListClient.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using System.Threading.Tasks;
+using System;
+using System.Linq;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -40,11 +44,36 @@ namespace WebApp_OpenIDConnect_DotNet
 
             services.AddOptions();
 
-            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                    .EnableTokenAcquisitionToCallDownstreamApi(
-                        Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
-                     )
-                    .AddInMemoryTokenCaches();
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(
+                    options =>
+                    {
+                        Configuration.Bind("AzureAd", options);
+
+                        options.Events.OnTokenResponseReceived = async context =>
+                        {
+                            await Task.Run(() => { Console.WriteLine($"Token response received: Access Token is {context.ProtocolMessage.AccessToken}"); });
+
+                        };
+
+                        options.Events.OnMessageReceived = async context =>
+                        {
+                            await Task.Run(() => { Console.WriteLine($"On message received: Access Token is {context.ProtocolMessage.AccessToken}"); });
+                        };
+
+                        options.Events.OnTokenValidated = async context =>
+                        {
+                            await Task.Run(() => { Console.WriteLine($"On token validated: Access Token is {context.ProtocolMessage.AccessToken}"); });
+                        };
+                    },
+
+                    subscribeToOpenIdConnectMiddlewareDiagnosticsEvents: true
+                )
+
+            .EnableTokenAcquisitionToCallDownstreamApi(
+               // Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
+                )
+            .AddInMemoryTokenCaches();
 
             // Add APIs
             services.AddTodoListService(Configuration);
