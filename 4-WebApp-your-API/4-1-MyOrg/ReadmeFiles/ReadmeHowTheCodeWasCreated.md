@@ -48,6 +48,7 @@
      ```
 
     This enables your application to use the Microsoft identity platform endpoint. This endpoint is capable of signing-in users both with their Work and School and Microsoft Personal accounts.
+    EnableTokenAcquisitionToCallDownstreamApi method optionally accepts a list of scopes that will be required to be inside "scp" claim during token acquisition 
 
 1. Change the `Properties\launchSettings.json` file to ensure that you start your web app from <https://localhost:44321> as registered. For this:
      * update the `sslPort` of the `iisSettings` section to be `44321`
