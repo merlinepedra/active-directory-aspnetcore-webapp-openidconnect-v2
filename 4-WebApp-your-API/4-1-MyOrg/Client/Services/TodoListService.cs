@@ -38,14 +38,14 @@ namespace TodoListClient.Services
         private readonly ITokenAcquisition _tokenAcquisition;
         ILogger _logger;
 
-        public TodoListService(ITokenAcquisition tokenAcquisition, HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor contextAccessor)
+        public TodoListService(ITokenAcquisition tokenAcquisition, HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor contextAccessor, ILoggerFactory loggerFactory)
         {
             _httpClient = httpClient;
             _tokenAcquisition = tokenAcquisition;
             _contextAccessor = contextAccessor;
-            _TodoListScopes = "TEST";// configuration["TodoList:TodoListScopes"];
+            _TodoListScopes = "api://ed0ccc84-daf9-4b02-9b97-fa3697d14581/ToDoList.Write";// configuration["TodoList:TodoListScopes"];
             _TodoListBaseAddress = configuration["TodoList:TodoListBaseAddress"];
-            //_logger = logger;
+            _logger = loggerFactory.CreateLogger<TodoListService>();
         }
 
         public async Task<Todo> AddAsync(Todo todo)
@@ -118,7 +118,7 @@ namespace TodoListClient.Services
         private async Task PrepareAuthenticatedClient()
         {
             var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _TodoListScopes });
-            //_logger.LogInformation($"access token-{accessToken}");
+            _logger.LogInformation($"access token-{accessToken}");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }

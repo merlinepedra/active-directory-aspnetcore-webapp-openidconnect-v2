@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace WebApp_OpenIDConnect_DotNet
 {
@@ -71,6 +72,7 @@ namespace WebApp_OpenIDConnect_DotNet
                 )
 
             .EnableTokenAcquisitionToCallDownstreamApi(
+                new List<string>() { "api://ed0ccc84-daf9-4b02-9b97-fa3697d14581/ToDoList.Read"}
                // Configuration.GetSection("TodoList:TodoListScopes").Get<string>().Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
                 )
             .AddInMemoryTokenCaches();
