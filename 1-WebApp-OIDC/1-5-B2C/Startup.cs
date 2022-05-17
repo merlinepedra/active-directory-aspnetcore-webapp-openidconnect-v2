@@ -40,10 +40,6 @@ namespace WebApp_OpenIDConnect_DotNet
             //services.AddMicrosoftIdentityWebAppAuthentication(Configuration, Constants.AzureAdB2C);
 
             services.AddAuthentication(Constants.AzureAdB2C)
-               // .addmicrosoftwebapiauthentication
-
-
-
                 .AddAzureADB2C(options =>
                 {
                     this.Configuration.Bind("AzureAdB2C", options);
