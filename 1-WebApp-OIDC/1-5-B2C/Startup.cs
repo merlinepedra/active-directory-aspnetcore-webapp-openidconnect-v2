@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,8 +37,29 @@ namespace WebApp_OpenIDConnect_DotNet
             });
 
             // Configuration to sign-in users with Azure AD B2C
-            services.AddMicrosoftIdentityWebAppAuthentication(Configuration, Constants.AzureAdB2C);
-            
+            //services.AddMicrosoftIdentityWebAppAuthentication(Configuration, Constants.AzureAdB2C);
+
+            services.AddAuthentication(Constants.AzureAdB2C)
+               // .addmicrosoftwebapiauthentication
+
+
+
+                .AddAzureADB2C(options =>
+                {
+                    this.Configuration.Bind("AzureAdB2C", options);
+                })
+                .AddOpenIdConnect("o365", options =>
+                {
+                    AzureADB2COptions b2cOptions = new AzureADB2COptions();
+                    this.Configuration.Bind("AzureAdB2C", b2cOptions);
+
+                    var tenantName = b2cOptions.Domain.Substring(0, b2cOptions.Domain.IndexOf('.'));
+                    options.Authority = $"https://{tenantName}.b2clogin.com/tfp/{b2cOptions.Domain}/{b2cOptions.SignUpSignInPolicyId}-o365/v2.0";
+                    options.ClientId = b2cOptions.ClientId;
+                    options.CallbackPath = b2cOptions.CallbackPath + "-o365";
+                    options.TokenValidationParameters.NameClaimType = "name";
+                });
+
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
 
